@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#06361b">
+<title>Get Helping Handz</title>
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;background:#052d17;font-family:Arial,Helvetica,sans-serif}
+body{display:flex;justify-content:center}
+.page{
+  position:relative;
+  width:min(100vw,720px);
+  aspect-ratio:1024/1792;
+  background:url("./helping-handz-background.png") center top/100% 100% no-repeat;
+  overflow:hidden;
+}
+.controls{
+  position:absolute;
+  left:7.5%;
+  right:7.5%;
+  top:74.5%;
+  text-align:center;
+  color:white;
+}
+#getBtn{
+  width:100%;
+  min-height:58px;
+  padding:15px 12px;
+  border-radius:18px;
+  border:2px solid #ffe39a;
+  background:linear-gradient(#f6bf43,#dc8d16);
+  color:#082d18;
+  font-size:clamp(17px,4.8vw,25px);
+  font-weight:900;
+  letter-spacing:.2px;
+  box-shadow:0 6px 0 rgba(0,0,0,.25),0 9px 22px rgba(0,0,0,.32);
+  cursor:pointer;
+}
+.copy{
+  margin:15px auto 13px;
+  max-width:92%;
+  font-size:clamp(12px,3.1vw,16px);
+  line-height:1.35;
+  font-weight:700;
+  text-shadow:0 2px 3px #000;
+}
+.openrow{
+  border:2px solid #dba12d;
+  border-radius:17px;
+  padding:12px 13px;
+  background:rgba(1,24,12,.83);
+  font-size:clamp(11px,2.8vw,15px);
+  font-weight:800;
+}
+#openBtn{
+  display:inline-block;
+  margin-left:7px;
+  color:#f2b536;
+  text-decoration:underline;
+  font-size:1.12em;
+  font-weight:900;
+}
+.help{
+  display:none;
+  margin-top:10px;
+  padding:10px 12px;
+  border-radius:12px;
+  background:rgba(0,0,0,.82);
+  border:1px solid #dba12d;
+  font-size:clamp(11px,2.8vw,14px);
+  line-height:1.45;
+  text-align:left;
+}
+.help b{color:#f2b536}
+@media (min-width:721px){
+  .page{min-height:100vh}
+}
+</style>
+</head>
+<body>
+<main class="page">
+  <section class="controls">
+    <button id="getBtn" type="button">GET HELPING HANDZ</button>
+    <div class="copy">Book moving help, cleaning, lawn care and more — right from your phone.</div>
+    <div class="openrow">ALREADY HAVE HELPING HANDZ?
+      <a id="openBtn" href="https://helpinghandzonline.square.site/">OPEN APP ›</a>
+    </div>
+    <div id="iosHelp" class="help">
+      <b>Get Helping Handz on iPhone</b><br>
+      In Safari, tap Share → <b>Add to Home Screen</b> → Add.
+    </div>
+    <div id="androidHelp" class="help">
+      <b>Get Helping Handz on Android</b><br>
+      If your phone does not show the app prompt, open your browser menu and choose <b>Add to Home screen</b> or the browser's app option.
+    </div>
+  </section>
+</main>
+<script>
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("./service-worker.js");
+
+let deferredPrompt = null;
+const getBtn = document.getElementById("getBtn");
+const iosHelp = document.getElementById("iosHelp");
+const androidHelp = document.getElementById("androidHelp");
+const target = "https://helpinghandzonline.square.site/";
+const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+const standalone = window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+
+window.addEventListener("beforeinstallprompt", e => {
+  e.preventDefault();
+  deferredPrompt = e;
+});
+
+getBtn.addEventListener("click", async () => {
+  iosHelp.style.display = "none";
+  androidHelp.style.display = "none";
+
+  if (standalone) {
+    location.href = target;
+    return;
+  }
+
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    return;
+  }
+
+  const box = isIOS ? iosHelp : androidHelp;
+  box.style.display = "block";
+  box.scrollIntoView({behavior:"smooth", block:"nearest"});
+});
+
+// Launching from the saved Helping Handz icon opens the existing Square site.
+if (standalone) setTimeout(() => location.replace(target), 250);
+</script>
+</body>
+</html>
