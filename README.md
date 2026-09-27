@@ -1,0 +1,1 @@
+Upload all files to the root of your GitHub Pages repository. Enable Pages from main / (root). No Square integration is required.
